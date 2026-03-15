@@ -1,12 +1,22 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { AuthProvider } from "./hooks/AuthProvider";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
+// Hide preloader once React is ready
+const root = createRoot(document.getElementById("root")!);
+root.render(
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>,
+);
+
+// Hide preloader
+requestAnimationFrame(() =>
+  requestAnimationFrame(() => (window as any).__hidePreloader?.()),
 );
 
 // Register service worker for PWA

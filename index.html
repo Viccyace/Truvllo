@@ -4,49 +4,137 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-  <!-- PWA -->
   <meta name="theme-color" content="#1B4332" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Truvllo" />
-
-  <!-- SEO -->
   <meta name="description"
     content="AI-powered budget tracker. Set a budget, log expenses, and get personalised insights — for free." />
-  <meta name="keywords" content="budget tracker, expense tracker, Nigeria, personal finance, AI budgeting" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Truvllo — Budget with clarity" />
-  <meta property="og:description"
-    content="AI-powered budget tracker. Set a budget, log expenses, and get personalised insights." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/icons/icon-512.png" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Truvllo — Budget with clarity" />
-  <meta name="twitter:description" content="AI-powered budget tracker." />
-  <meta name="twitter:image" content="/icons/icon-512.png" />
-
-  <!-- Icons -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
     rel="stylesheet" />
-
   <title>Truvllo — Budget with clarity</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body,
+    #root {
+      background: #FAF8F3 !important;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    /* ── App shell preloader ── */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      background: #FAF8F3;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: opacity 0.3s ease;
+    }
+
+    #preloader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pre-logo {
+      font-family: Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0A0A0A;
+      letter-spacing: -0.02em;
+    }
+
+    .pre-spinner {
+      width: 32px;
+      height: 32px;
+      border: 2.5px solid #E8F5EE;
+      border-top-color: #2D6A4F;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .pre-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, #1B4332, #40916C);
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 0 6px rgba(45, 106, 79, 0.5);
+      animation: loadbar 1.2s ease forwards;
+      z-index: 10000;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes loadbar {
+      0% {
+        width: 0%;
+        opacity: 1;
+      }
+
+      60% {
+        width: 75%;
+      }
+
+      90% {
+        width: 92%;
+      }
+
+      100% {
+        width: 100%;
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Instant preloader — shows before React mounts -->
+  <div id="preloader">
+    <div class="pre-bar"></div>
+    <span class="pre-logo">Truvllo.</span>
+    <div class="pre-spinner"></div>
+  </div>
+
   <div id="root"></div>
+
+  <script>
+    // Hide preloader as soon as React mounts
+    window.__hidePreloader = function () {
+      var el = document.getElementById('preloader');
+      if (!el) return;
+      el.classList.add('fade-out');
+      setTimeout(function () { el.remove(); }, 350);
+    };
+  </script>
+
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

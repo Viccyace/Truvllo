@@ -4,7 +4,8 @@ import { AppShell } from "@/components/shared/AppShell";
 import { supabase } from "@/lib/supabase/client";
 import { CurrencyCode } from "@/types";
 import { formatPrice } from "@/lib/constants/pricing";
-import { Check, Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, Sparkles, Bell, BellOff } from "lucide-react";
+import { usePushNotifications } from "@/hooks/usePush";
 import { Link } from "react-router-dom";
 
 const currencies: { code: CurrencyCode; label: string }[] = [
@@ -29,6 +30,7 @@ export default function Settings() {
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState("");
   const [pwSuccess, setPwSuccess] = useState(false);
+  const push = usePushNotifications();
 
   if (!profile) return null;
   const isPremium = profile?.plan === "premium" || profile?.plan === "business";
@@ -198,6 +200,73 @@ export default function Settings() {
               </button>
             </form>
           </div>
+        </div>
+
+        {/* Notifications */}
+        <div className="rounded-[28px] border border-cream-dark bg-white p-6 shadow-soft">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-forest/10">
+              <Bell size={16} className="text-forest" />
+            </div>
+            <h3 className="font-semibold text-ink">Daily reminders</h3>
+          </div>
+          {!push.supported ? (
+            <p className="text-sm text-stone">
+              Push notifications are not supported in your browser.
+            </p>
+          ) : push.permission === "denied" ? (
+            <div className="rounded-2xl bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-700">
+                Notifications blocked
+              </p>
+              <p className="mt-1 text-xs text-red-600">
+                Enable notifications in your browser settings to use this
+                feature.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-stone leading-6">
+                Get a daily reminder at 8pm to log your expenses and keep your
+                streak alive.
+              </p>
+              <div className="flex items-center justify-between rounded-2xl bg-cream p-4">
+                <div className="flex items-center gap-3">
+                  {push.isEnabled ? (
+                    <Bell size={16} className="text-forest" />
+                  ) : (
+                    <BellOff size={16} className="text-stone" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-ink">
+                      Daily reminder
+                    </p>
+                    <p className="text-xs text-stone">
+                      {push.isEnabled ? "Enabled — 8:00 PM daily" : "Disabled"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={
+                    push.isEnabled
+                      ? push.disableNotifications
+                      : push.requestPermission
+                  }
+                  className={`rounded-2xl px-4 py-2 text-xs font-semibold transition ${push.isEnabled ? "bg-cream-dark text-stone hover:bg-red-50 hover:text-red-600" : "bg-forest text-white hover:bg-forest-dark"}`}
+                >
+                  {push.isEnabled ? "Turn off" : "Turn on"}
+                </button>
+              </div>
+              {push.isEnabled && (
+                <button
+                  onClick={push.sendTestNotification}
+                  className="text-xs text-forest hover:underline"
+                >
+                  Send a test notification
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Plan card */}
