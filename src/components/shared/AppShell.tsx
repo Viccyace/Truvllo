@@ -130,17 +130,38 @@ export function AppShell({ title, children, profile, subtitle }: Props) {
   return (
     <div className="min-h-screen bg-cream text-ink">
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-cream-dark bg-cream/95 px-4 py-3 backdrop-blur lg:hidden">
-        <img src="/logo-light.svg" className="h-10 w-auto" alt="Truvllo" />
-        <div className="flex items-center gap-3">
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-forest text-xs font-bold text-white">
-            {initials}
-          </div>
+      <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-cream-dark bg-cream/95 px-3 py-2.5 backdrop-blur lg:hidden">
+        {/* Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-cream-dark bg-white text-ink/70 shadow-soft hover:bg-cream-dark active:scale-95 transition"
+        >
+          <ChevronLeft size={18} />
+        </button>
+
+        {/* Logo — centered, dark version for light background */}
+        <div className="flex flex-1 items-center justify-center">
+          <img src="/logo-dark.svg" className="h-7 w-auto" alt="Truvllo" />
+        </div>
+
+        {/* Avatar + menu */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <button
+            onClick={() => navigate("/settings")}
+            className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-soft"
+            style={{ background: "linear-gradient(135deg, #1B4332, #40916C)" }}
+            title={profile.full_name}
+          >
+            <span className="text-xs font-bold text-white">{initials}</span>
+            {isPremium && (
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-cream bg-amber" />
+            )}
+          </button>
           <button
             onClick={() => setDrawer(true)}
-            className="rounded-xl p-2 text-ink/60 hover:bg-cream-dark"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-cream-dark bg-white text-ink/60 hover:bg-cream-dark transition"
           >
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
         </div>
       </header>

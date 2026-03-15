@@ -238,13 +238,15 @@ export default function Settings() {
                 </div>
                 <ul className="space-y-2.5 mb-6">
                   {[
-                    "Unlimited budgets",
                     "Category caps & alerts",
                     "Recurring expense tracking",
-                    "Advanced insights & charts",
+                    "Advanced charts",
                     "Export to CSV",
                     "Habit streaks",
-                    "6 AI-powered features",
+                    "AI Spending Analyst",
+                    "AI Savings Coach",
+                    "Natural Language Entry",
+                    "AI Budget Advisor",
                   ].map((f) => (
                     <li
                       key={f}

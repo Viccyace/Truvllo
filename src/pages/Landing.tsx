@@ -663,11 +663,11 @@ export default function Landing() {
                 <div className="my-6 h-px bg-white/10" />
                 <ul className="flex-1 space-y-3.5">
                   {[
-                    "One active budget",
+                    "Unlimited budgets",
                     "Daily expense logging",
                     "Budget pace indicator",
+                    "Safe-to-spend forecast",
                     "Simple cycle summaries",
-                    "One daily reminder",
                   ].map((f) => (
                     <li
                       key={f}

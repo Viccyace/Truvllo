@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Sparkles, X } from "lucide-react";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Sparkles, X } from 'lucide-react';
 
 interface Props {
-  feature: string;
+  feature:   string;
   isPremium: boolean;
-  children: React.ReactNode;
-  hint?: string;
+  children:  React.ReactNode;
+  hint?:     string;
 }
 
 export function PremiumGate({ feature, isPremium, children, hint }: Props) {
@@ -25,8 +25,7 @@ export function PremiumGate({ feature, isPremium, children, hint }: Props) {
         {/* Dismiss */}
         <button
           onClick={() => setDismissed(true)}
-          className="absolute right-3 top-3 rounded-lg p-1 text-stone/50 hover:text-stone transition"
-        >
+          className="absolute right-3 top-3 rounded-lg p-1 text-stone/50 hover:text-stone transition">
           <X size={13} />
         </button>
 
@@ -44,8 +43,7 @@ export function PremiumGate({ feature, isPremium, children, hint }: Props) {
         {/* CTA */}
         <Link
           to="/upgrade"
-          className="mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-forest py-2 text-xs font-semibold text-white transition hover:bg-forest-dark active:scale-[0.98]"
-        >
+          className="mt-3 flex items-center justify-center gap-1.5 rounded-xl bg-forest py-2 text-xs font-semibold text-white transition hover:bg-forest-dark active:scale-[0.98]">
           <Sparkles size={11} /> Upgrade to unlock
         </Link>
       </div>

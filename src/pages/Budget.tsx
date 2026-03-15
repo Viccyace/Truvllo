@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useBudget, useExpenses, useCategoryCaps } from "@/hooks/useBudget";
 import { AppShell } from "@/components/shared/AppShell";
@@ -6,7 +6,18 @@ import { PremiumGate } from "@/components/shared/PremiumGate";
 import { formatCurrency } from "@/lib/utils/currency";
 import { defaultCategories } from "@/lib/constants/categories";
 import { supabase } from "@/lib/supabase/client";
-import { Plus, Trash2, Loader2, Check, Edit2, X } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Loader2,
+  Check,
+  Edit2,
+  X,
+  Target,
+  Brain,
+  Sparkles,
+} from "lucide-react";
+import { useAIBudgetAdvisor } from "@/hooks/useAI";
 
 export default function Budget() {
   const { profile } = useAuth();
@@ -17,6 +28,10 @@ export default function Budget() {
   const [showAddCap, setShowAddCap] = useState(false);
   const [showNewBudget, setShowNewBudget] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [aiIncome, setAiIncome] = useState("");
+  const [aiGoal, setAiGoal] = useState("");
+  const [aiTimeframe, setAiTimeframe] = useState("monthly");
+  const advisor = useAIBudgetAdvisor();
   const [error, setError] = useState("");
   const today = new Date().toISOString().split("T")[0];
 
@@ -461,6 +476,110 @@ export default function Budget() {
             </div>
           </PremiumGate>
         )}
+
+        {/* AI Budget Advisor */}
+        <PremiumGate
+          feature="AI Budget Advisor"
+          isPremium={isPremium}
+          hint="Tell AI your income and it suggests a realistic budget."
+        >
+          <div className="rounded-[28px] border border-cream-dark bg-white p-6 shadow-soft">
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-violet-600">
+                <Target size={16} className="text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink">
+                  AI Budget Advisor
+                </p>
+                <p className="text-xs text-stone">
+                  Get a personalised budget suggestion
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-stone">
+                    Your {aiTimeframe} income
+                  </label>
+                  <input
+                    value={aiIncome}
+                    onChange={(e) => setAiIncome(e.target.value)}
+                    type="number"
+                    placeholder="0"
+                    inputMode="decimal"
+                    className="w-full rounded-2xl border border-cream-dark bg-cream px-4 py-3 text-sm outline-none focus:border-forest focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-stone">
+                    Timeframe
+                  </label>
+                  <select
+                    value={aiTimeframe}
+                    onChange={(e) => setAiTimeframe(e.target.value)}
+                    className="w-full rounded-2xl border border-cream-dark bg-cream px-4 py-3 text-sm outline-none focus:border-forest focus:bg-white"
+                  >
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-stone">
+                  Financial goal
+                </label>
+                <input
+                  value={aiGoal}
+                  onChange={(e) => setAiGoal(e.target.value)}
+                  placeholder='e.g. "Save for a trip to Dubai in 6 months"'
+                  className="w-full rounded-2xl border border-cream-dark bg-cream px-4 py-3 text-sm outline-none focus:border-forest focus:bg-white"
+                />
+              </div>
+              <button
+                onClick={() =>
+                  advisor.getAdvice(
+                    parseFloat(aiIncome),
+                    aiGoal,
+                    profile.currency,
+                    aiTimeframe,
+                  )
+                }
+                disabled={advisor.loading || !aiIncome || !aiGoal}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 py-3.5 text-sm font-semibold text-white disabled:opacity-50 hover:bg-violet-700 transition"
+              >
+                {advisor.loading ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    Thinking…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={14} />
+                    Get AI advice
+                  </>
+                )}
+              </button>
+            </div>
+            {advisor.error && (
+              <p className="mt-3 text-sm text-red-500">{advisor.error}</p>
+            )}
+            {advisor.advice && (
+              <div className="mt-4 rounded-2xl border border-violet-100 bg-violet-50 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain size={14} className="text-violet-600 shrink-0" />
+                  <p className="text-xs font-semibold text-violet-700">
+                    AI Recommendation
+                  </p>
+                </div>
+                <p className="text-sm leading-7 text-violet-900 whitespace-pre-wrap">
+                  {advisor.advice}
+                </p>
+              </div>
+            )}
+          </div>
+        </PremiumGate>
       </div>
     </AppShell>
   );
