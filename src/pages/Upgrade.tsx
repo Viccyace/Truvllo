@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppShell } from "@/components/shared/AppShell";
 import { formatPrice } from "@/lib/constants/pricing";
@@ -92,14 +93,37 @@ export default function Upgrade() {
 
   const price = formatPrice(6500, profile.currency);
 
-  function handleUpgrade() {
+  async function handleUpgrade() {
+    if (!profile) return;
     setLoading(true);
-    setTimeout(() => {
-      alert(
-        "Paystack integration coming soon! Your account will be upgraded once payment is set up.",
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paystack-checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({
+            email: profile.email,
+            plan: "premium",
+            currency: profile.currency,
+            userId: profile.id,
+          }),
+        },
       );
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      // Redirect to Paystack payment page
+      window.location.href = data.authorization_url;
+    } catch (err: any) {
+      alert(`Payment error: ${err.message}`);
       setLoading(false);
-    }, 800);
+    }
   }
 
   return (

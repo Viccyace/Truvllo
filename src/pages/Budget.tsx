@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useBudget, useExpenses, useCategoryCaps } from "@/hooks/useBudget";
+import {
+  useBudget,
+  useExpenses,
+  useCategoryCaps,
+  useRecurring,
+} from "@/hooks/useBudget";
 import { AppShell } from "@/components/shared/AppShell";
 import { PremiumGate } from "@/components/shared/PremiumGate";
 import { formatCurrency } from "@/lib/utils/currency";
@@ -16,6 +21,7 @@ import {
   Target,
   Brain,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { useAIBudgetAdvisor } from "@/hooks/useAI";
 
@@ -24,6 +30,16 @@ export default function Budget() {
   const { budget, reload } = useBudget();
   const { expenses } = useExpenses(budget?.id ?? null);
   const { caps, reload: reloadCaps } = useCategoryCaps(budget?.id ?? null);
+  const { items: recurring, reload: reloadRecurring } = useRecurring(
+    budget?.id ?? null,
+  );
+  const [showAddRecurring, setShowAddRecurring] = useState(false);
+  const [recurringForm, setRecurringForm] = useState({
+    title: "",
+    amount: "",
+    category: "",
+    frequency: "monthly",
+  });
   const [editingBudget, setEditingBudget] = useState(false);
   const [showAddCap, setShowAddCap] = useState(false);
   const [showNewBudget, setShowNewBudget] = useState(false);
@@ -42,6 +58,49 @@ export default function Budget() {
   expenses.forEach((e) => {
     spentMap[e.category] = (spentMap[e.category] ?? 0) + Number(e.amount);
   });
+
+  async function handleAddRecurring(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const today = new Date();
+    const nextDue = new Date(today);
+    if (recurringForm.frequency === "monthly")
+      nextDue.setMonth(nextDue.getMonth() + 1);
+    else if (recurringForm.frequency === "weekly")
+      nextDue.setDate(nextDue.getDate() + 7);
+    else nextDue.setDate(nextDue.getDate() + 1);
+
+    await supabase.from("recurring_expenses").insert({
+      user_id: user?.id,
+      budget_id: budget?.id,
+      title: recurringForm.title,
+      amount: parseFloat(recurringForm.amount),
+      category: recurringForm.category,
+      frequency: recurringForm.frequency,
+      next_due_date: nextDue.toISOString().split("T")[0],
+      is_active: true,
+    });
+    setSaving(false);
+    setShowAddRecurring(false);
+    setRecurringForm({
+      title: "",
+      amount: "",
+      category: "",
+      frequency: "monthly",
+    });
+    reloadRecurring();
+  }
+
+  async function handleDeleteRecurring(id: string) {
+    await supabase
+      .from("recurring_expenses")
+      .update({ is_active: false })
+      .eq("id", id);
+    reloadRecurring();
+  }
 
   async function handleUpdateBudget(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -471,6 +530,184 @@ export default function Budget() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </div>
+          </PremiumGate>
+        )}
+
+        {/* Recurring Expenses */}
+        {budget && (
+          <PremiumGate
+            feature="Recurring expenses"
+            isPremium={isPremium}
+            hint="Set up rent and subscriptions once — logged every cycle."
+          >
+            <div className="rounded-[28px] border border-cream-dark bg-white p-6 shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-forest/10">
+                    <RefreshCw size={16} className="text-forest" />
+                  </div>
+                  <h3 className="font-semibold text-ink">Recurring expenses</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddRecurring((v) => !v)}
+                  className="flex items-center gap-1.5 rounded-2xl bg-forest px-3 py-2 text-xs font-semibold text-white hover:bg-forest-dark transition"
+                >
+                  <Plus size={13} /> Add
+                </button>
+              </div>
+
+              {showAddRecurring && (
+                <form
+                  onSubmit={handleAddRecurring}
+                  className="mb-4 space-y-3 rounded-2xl border border-cream-dark bg-cream p-4"
+                >
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-stone">
+                        Title
+                      </label>
+                      <input
+                        value={recurringForm.title}
+                        onChange={(e) =>
+                          setRecurringForm((f) => ({
+                            ...f,
+                            title: e.target.value,
+                          }))
+                        }
+                        required
+                        placeholder="e.g. Rent"
+                        className="w-full rounded-xl border border-cream-dark bg-white px-3 py-2.5 text-sm outline-none focus:border-forest"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-stone">
+                        Amount
+                      </label>
+                      <input
+                        value={recurringForm.amount}
+                        onChange={(e) =>
+                          setRecurringForm((f) => ({
+                            ...f,
+                            amount: e.target.value,
+                          }))
+                        }
+                        required
+                        type="number"
+                        min="1"
+                        placeholder="0"
+                        inputMode="decimal"
+                        className="w-full rounded-xl border border-cream-dark bg-white px-3 py-2.5 text-sm outline-none focus:border-forest"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-stone">
+                        Category
+                      </label>
+                      <select
+                        value={recurringForm.category}
+                        onChange={(e) =>
+                          setRecurringForm((f) => ({
+                            ...f,
+                            category: e.target.value,
+                          }))
+                        }
+                        required
+                        className="w-full rounded-xl border border-cream-dark bg-white px-3 py-2.5 text-sm outline-none focus:border-forest"
+                      >
+                        <option value="">Select…</option>
+                        {defaultCategories.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-stone">
+                        Frequency
+                      </label>
+                      <select
+                        value={recurringForm.frequency}
+                        onChange={(e) =>
+                          setRecurringForm((f) => ({
+                            ...f,
+                            frequency: e.target.value,
+                          }))
+                        }
+                        className="w-full rounded-xl border border-cream-dark bg-white px-3 py-2.5 text-sm outline-none focus:border-forest"
+                      >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-forest py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+                    >
+                      {saving ? (
+                        <Loader2 size={13} className="animate-spin" />
+                      ) : (
+                        <Check size={13} />
+                      )}{" "}
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddRecurring(false)}
+                      className="rounded-xl border border-cream-dark px-4 py-2.5 text-sm text-stone hover:bg-cream"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {recurring.length === 0 && !showAddRecurring ? (
+                <p className="text-sm text-stone">
+                  No recurring expenses yet. Add rent, subscriptions, or any
+                  regular payment.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {recurring.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between gap-3 rounded-[20px] bg-cream p-4"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <RefreshCw size={14} className="shrink-0 text-stone" />
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-ink">
+                            {item.title}
+                          </p>
+                          <p className="text-xs text-stone">
+                            {item.category} · {item.frequency} · next{" "}
+                            {item.next_due_date}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-3">
+                        <span className="stat-number text-sm font-semibold text-ink">
+                          {formatCurrency(item.amount, profile.currency)}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteRecurring(item.id)}
+                          className="text-stone hover:text-red-500 transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

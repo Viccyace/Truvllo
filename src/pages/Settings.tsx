@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { AppShell } from "@/components/shared/AppShell";
 import { supabase } from "@/lib/supabase/client";
@@ -30,6 +30,16 @@ export default function Settings() {
   const [pwSaving, setPwSaving] = useState(false);
   const [pwError, setPwError] = useState("");
   const [pwSuccess, setPwSuccess] = useState(false);
+
+  // Handle Paystack redirect back after payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upgraded") === "true") {
+      // Clear cached profile to reload with premium plan
+      localStorage.removeItem("truvllo_profile");
+      window.history.replaceState({}, "", "/settings");
+    }
+  }, []);
   const push = usePushNotifications();
 
   if (!profile) return null;
