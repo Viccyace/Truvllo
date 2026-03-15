@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -13,6 +14,8 @@ import {
   MessageSquare,
   Star,
   Check,
+  Play,
+  X,
 } from "lucide-react";
 
 const features = [
@@ -158,6 +161,8 @@ const testimonials = [
 ];
 
 export default function Landing() {
+  const [showDemo, setShowDemo] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col bg-cream">
       {/* Navbar */}
@@ -282,13 +287,12 @@ export default function Landing() {
                       className="transition group-hover:translate-x-1"
                     />
                   </Link>
-                  <Link
-                    to="/pricing"
-                    className="flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 font-semibold text-white/90 transition hover:border-white/40 hover:bg-white/5"
+                  <button
+                    onClick={() => setShowDemo(true)}
+                    className="flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 font-semibold text-white/90 transition hover:border-white/40 hover:bg-white/5 active:scale-[0.98]"
                   >
-                    <Sparkles size={15} className="text-forest-light" /> View
-                    plans
-                  </Link>
+                    <Play size={15} className="text-forest-light" /> See demo
+                  </button>
                 </div>
                 <div className="mt-10 flex items-center gap-4 text-sm text-white/40">
                   <div className="flex -space-x-2">
@@ -807,6 +811,95 @@ export default function Landing() {
           </div>
         </section>
       </main>
+
+      {/* Demo video modal */}
+      {showDemo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-ink/80 backdrop-blur-sm"
+            onClick={() => setShowDemo(false)}
+          />
+          <div className="relative w-full max-w-3xl rounded-[28px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+            {/* Header */}
+            <div className="flex items-center justify-between bg-ink px-5 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-forest">
+                  <Play size={14} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    Truvllo Demo
+                  </p>
+                  <p className="text-xs text-white/40">See how it works</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDemo(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-white/50 hover:bg-white/10 hover:text-white transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Video area */}
+            <div className="relative bg-ink/95 aspect-video flex items-center justify-center">
+              {/* Replace src with your video URL when ready */}
+              <video
+                src="/demo.mp4"
+                controls
+                autoPlay
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Hide video and show placeholder if file not found
+                  (e.target as HTMLVideoElement).style.display = "none";
+                  document.getElementById("demo-placeholder")!.style.display =
+                    "flex";
+                }}
+              />
+              {/* Placeholder — shown when video not uploaded yet */}
+              <div
+                id="demo-placeholder"
+                className="absolute inset-0 flex-col items-center justify-center gap-4 bg-ink/95 hidden"
+                style={{ display: "flex" }}
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-forest/20 border border-forest/30">
+                  <Play size={28} className="text-forest-light ml-1" />
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-white">
+                    Demo video coming soon
+                  </p>
+                  <p className="mt-1 text-xs text-white/40">
+                    Add your video file to{" "}
+                    <code className="text-forest-light">public/demo.mp4</code>
+                  </p>
+                </div>
+                <Link
+                  to="/signup"
+                  onClick={() => setShowDemo(false)}
+                  className="mt-2 flex items-center gap-2 rounded-full bg-forest px-6 py-2.5 text-sm font-semibold text-white hover:bg-forest-dark transition"
+                >
+                  Try it free instead <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between bg-ink/95 border-t border-white/8 px-5 py-3">
+              <p className="text-xs text-white/30">
+                No credit card needed to get started
+              </p>
+              <Link
+                to="/signup"
+                onClick={() => setShowDemo(false)}
+                className="flex items-center gap-1.5 rounded-full bg-forest px-4 py-2 text-xs font-semibold text-white hover:bg-forest-dark transition"
+              >
+                Start free <ArrowRight size={12} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-cream-dark bg-ink text-white">
