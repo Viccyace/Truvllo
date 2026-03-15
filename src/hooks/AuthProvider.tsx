@@ -82,9 +82,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loadProfile(session.user.id);
     });
 
+    // Listen for cache clear (e.g. after onboarding completes)
+    function handleStorage(e: StorageEvent) {
+      if (e.key === "truvllo_profile" && e.newValue === null) {
+        // Cache was cleared — reload profile from Supabase
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session && mounted) loadProfile(session.user.id);
+        });
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 

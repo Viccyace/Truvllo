@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/sw.js", "destination": "/sw.js" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/icons/(.*)", "destination": "/icons/$1" },
+    { "source": "/favicon.svg", "destination": "/favicon.svg" },
+    { "source": "/logo-dark.svg", "destination": "/logo-dark.svg" },
+    { "source": "/logo-light.svg", "destination": "/logo-light.svg" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -89,6 +89,7 @@ function ProgressBar() {
 // Keep content visible while loading
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
+  // Still loading — don't redirect yet, wait for real auth state
   if (loading) return null;
   if (!profile) return <Navigate to="/login" replace />;
   if (!profile.onboarding_completed)
