@@ -293,12 +293,6 @@ export default function Landing() {
                   >
                     <Play size={15} className="text-forest-light" /> See demo
                   </button>
-                  <Link
-                    to="/demo"
-                    className="flex items-center gap-2 rounded-full border border-forest-light/30 bg-forest/20 px-6 py-3.5 text-sm font-semibold text-forest-light transition hover:bg-forest/30"
-                  >
-                    Try live demo
-                  </Link>
                 </div>
                 <div className="mt-10 flex items-center gap-4 text-sm text-white/40">
                   <div className="flex -space-x-2">
@@ -788,12 +782,6 @@ export default function Landing() {
 
               {/* CTA overlay */}
               <div className="mt-8 text-center">
-                <Link
-                  to="/demo"
-                  className="inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
-                >
-                  Try the live demo <ArrowRight size={15} />
-                </Link>
                 <p className="mt-3 text-xs text-stone">
                   No account needed · See real features · Takes 30 seconds
                 </p>
