@@ -1,4 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
+import { TrialBanner } from "@/components/shared/TrialBanner";
+import { TrialActivatedModal } from "@/components/shared/TrialActivatedModal";
 import { useBudget, useExpenses } from "@/hooks/useBudget";
 import {
   useAIAnalyst,
@@ -7,7 +9,6 @@ import {
   useAICategorise,
   useAIOverspend,
 } from "@/hooks/useAI";
-import { AppShell } from "@/components/shared/AppShell";
 import { PremiumGate } from "@/components/shared/PremiumGate";
 import { formatCurrency } from "@/lib/utils/currency";
 import {
@@ -84,7 +85,8 @@ const statusConfig: Record<
 };
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile: _profile } = useAuth();
+  const profile = _profile!;
   const { budget, reload: reloadBudget } = useBudget();
   const { expenses, reload: reloadExpenses } = useExpenses(budget?.id ?? null);
   const analyst = useAIAnalyst();
@@ -102,8 +104,8 @@ export default function Dashboard() {
   const formRef = useRef<HTMLFormElement>(null);
   const today = new Date().toISOString().split("T")[0];
 
-  if (!profile) return null;
   const isPremium = profile.plan === "premium" || profile.plan === "business";
+  const trialJustActivated = profile.trial_activated && expenses.length === 1;
   const totalSpent = expenses.reduce((s, e) => s + Number(e.amount), 0);
   const totalBudget = Number(budget?.total_amount ?? 0);
   const remaining = Math.max(0, totalBudget - totalSpent);
@@ -183,7 +185,13 @@ export default function Dashboard() {
   }
 
   return (
-    <AppShell title="Dashboard" profile={profile}>
+    <>
+      <div className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Dashboard
+        </h1>
+      </div>
+      <TrialActivatedModal justActivated={trialJustActivated} />
       {!budget ? (
         <div className="rounded-[24px] bg-cream py-16 text-center">
           <p className="text-stone">No active budget found.</p>
@@ -196,6 +204,8 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="space-y-5">
+          <TrialBanner profile={profile} />
+
           {/* Summary cards */}
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             {[
@@ -780,6 +790,6 @@ export default function Dashboard() {
           )}
         </div>
       )}
-    </AppShell>
+    </>
   );
 }

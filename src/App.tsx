@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { AppLayout } from "@/components/shared/AppLayout";
 
 const Landing = lazy(() => import("@/pages/Landing"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -89,8 +90,8 @@ function ProgressBar() {
 // Keep content visible while loading
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
-  // Still loading — don't redirect yet, wait for real auth state
-  if (loading) return null;
+  if (loading)
+    return <div style={{ minHeight: "100vh", background: "#FAF8F3" }} />;
   if (!profile) return <Navigate to="/login" replace />;
   if (!profile.onboarding_completed)
     return <Navigate to="/onboarding" replace />;
@@ -99,7 +100,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
-  if (loading) return null;
+  if (loading)
+    return <div style={{ minHeight: "100vh", background: "#FAF8F3" }} />;
   if (profile) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
@@ -131,54 +133,14 @@ export default function App() {
             }
           />
           <Route path="/onboarding" element={<Onboarding />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/expenses"
-            element={
-              <ProtectedRoute>
-                <Expenses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/budget"
-            element={
-              <ProtectedRoute>
-                <Budget />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/insights"
-            element={
-              <ProtectedRoute>
-                <Insights />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/upgrade"
-            element={
-              <ProtectedRoute>
-                <Upgrade />
-              </ProtectedRoute>
-            }
-          />
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/budget" element={<Budget />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/upgrade" element={<Upgrade />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

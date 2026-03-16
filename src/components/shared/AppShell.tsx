@@ -24,13 +24,11 @@ const nav = [
 ];
 
 interface Props {
-  title: string;
   children: React.ReactNode;
   profile: Profile;
-  subtitle?: string;
 }
 
-export function AppShell({ title, children, profile, subtitle }: Props) {
+export function AppShell({ children, profile }: Props) {
   const location = useLocation();
   const navigate = useNavigate();
   const [drawer, setDrawer] = useState(false);
@@ -191,22 +189,14 @@ export function AppShell({ title, children, profile, subtitle }: Props) {
         {/* Main */}
         <main className="min-w-0 flex-1">
           <div className="rounded-[20px] border border-cream-dark bg-white p-4 shadow-soft sm:rounded-[28px] sm:p-6 lg:p-7">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-                  {workspace}
-                </p>
-                <h1 className="mt-1 text-xl font-semibold tracking-tight text-ink sm:text-2xl lg:text-3xl">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="mt-1 text-sm text-stone">{subtitle}</p>
-                )}
-              </div>
+            <div className="flex items-center justify-between gap-3 mb-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
+                {workspace}
+              </p>
               {!isPremium ? (
                 <Link
                   to="/upgrade"
-                  className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-ink px-3 py-2 text-xs font-semibold text-white sm:px-4 sm:py-2.5 sm:text-sm"
+                  className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-ink px-3 py-2 text-xs font-semibold text-white"
                 >
                   <Sparkles size={12} className="text-amber" />
                   Upgrade
@@ -218,7 +208,7 @@ export function AppShell({ title, children, profile, subtitle }: Props) {
                 </span>
               )}
             </div>
-            <div className="mt-6">{children}</div>
+            {children}
           </div>
         </main>
       </div>

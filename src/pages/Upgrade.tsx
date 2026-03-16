@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { AppShell } from "@/components/shared/AppShell";
 import { formatPrice } from "@/lib/constants/pricing";
 import {
   Check,
@@ -83,18 +82,17 @@ const faqs = [
 ];
 
 export default function Upgrade() {
-  const { profile } = useAuth();
+  const { profile: _profile } = useAuth();
+  const profile = _profile!;
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (!profile) return null;
   if (profile.plan === "premium" || profile.plan === "business")
     return <Navigate to="/settings" replace />;
 
   const price = formatPrice(6500, profile.currency);
 
   async function handleUpgrade() {
-    if (!profile) return;
     setLoading(true);
     try {
       const {
@@ -127,7 +125,12 @@ export default function Upgrade() {
   }
 
   return (
-    <AppShell title="Upgrade to Premium" profile={profile}>
+    <>
+      <div className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Upgrade to Premium
+        </h1>
+      </div>
       <div className="space-y-6">
         {/* Hero */}
         <div
@@ -153,8 +156,8 @@ export default function Upgrade() {
               <em>your finances.</em>
             </h2>
             <p className="mt-3 max-w-md text-sm leading-7 text-white/60">
-              Unlock every tool Truvllo has — AI insights, category limits,
-              habit tracking, and more.
+              Your 7-day free trial gives you full access. Upgrade to keep it
+              after the trial ends — no surprises.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <div>
@@ -165,7 +168,8 @@ export default function Upgrade() {
                   <span className="mb-1 text-sm text-white/40">/ month</span>
                 </div>
                 <p className="mt-1 text-xs text-white/30">
-                  Billed monthly · Cancel anytime
+                  First 7 days free when you log your first expense · Cancel
+                  anytime
                 </p>
               </div>
               <button
@@ -181,7 +185,7 @@ export default function Upgrade() {
                 ) : (
                   <>
                     <Sparkles size={15} className="text-forest" />
-                    Upgrade now
+                    Upgrade to keep Premium
                   </>
                 )}
               </button>
@@ -356,10 +360,10 @@ export default function Upgrade() {
             Upgrade — {price}/mo
           </button>
           <p className="mt-3 text-xs text-white/40">
-            No commitment. Cancel anytime.
+            7-day free trial on first expense · Cancel anytime · No hidden fees
           </p>
         </div>
       </div>
-    </AppShell>
+    </>
   );
 }

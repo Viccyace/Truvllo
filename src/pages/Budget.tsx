@@ -6,7 +6,6 @@ import {
   useCategoryCaps,
   useRecurring,
 } from "@/hooks/useBudget";
-import { AppShell } from "@/components/shared/AppShell";
 import { PremiumGate } from "@/components/shared/PremiumGate";
 import { formatCurrency } from "@/lib/utils/currency";
 import { defaultCategories } from "@/lib/constants/categories";
@@ -26,7 +25,8 @@ import {
 import { useAIBudgetAdvisor } from "@/hooks/useAI";
 
 export default function Budget() {
-  const { profile } = useAuth();
+  const { profile: _profile } = useAuth();
+  const profile = _profile!;
   const { budget, reload } = useBudget();
   const { expenses } = useExpenses(budget?.id ?? null);
   const { caps, reload: reloadCaps } = useCategoryCaps(budget?.id ?? null);
@@ -51,7 +51,6 @@ export default function Budget() {
   const [error, setError] = useState("");
   const today = new Date().toISOString().split("T")[0];
 
-  if (!profile) return null;
   const isPremium = profile.plan === "premium" || profile.plan === "business";
 
   const spentMap: Record<string, number> = {};
@@ -182,7 +181,12 @@ export default function Budget() {
   }
 
   return (
-    <AppShell title="Budget" profile={profile}>
+    <>
+      <div className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Budget
+        </h1>
+      </div>
       <div className="space-y-5">
         {/* Current budget */}
         {budget ? (
@@ -818,6 +822,6 @@ export default function Budget() {
           </div>
         </PremiumGate>
       </div>
-    </AppShell>
+    </>
   );
 }

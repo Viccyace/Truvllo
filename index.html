@@ -31,108 +31,215 @@
     html,
     body,
     #root {
-      background: #FAF8F3 !important;
       min-height: 100vh;
+      background: #FAF8F3;
+    }
+
+    #preloader {
+      background: #0A0A0A;
     }
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     }
 
-    /* ── App shell preloader ── */
     #preloader {
       position: fixed;
       inset: 0;
-      background: #FAF8F3;
-      z-index: 9999;
+      z-index: 99999;
+      background: #0A0A0A;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
-      transition: opacity 0.3s ease;
+      gap: 0;
     }
 
-    #preloader.fade-out {
-      opacity: 0;
-      pointer-events: none;
+    /* Logo */
+    .pre-logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
 
     .pre-logo {
       font-family: Georgia, serif;
-      font-size: 28px;
+      font-size: 48px;
       font-weight: 700;
-      color: #0A0A0A;
-      letter-spacing: -0.02em;
+      color: #FAF8F3;
+      letter-spacing: -0.03em;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: logoIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
     }
 
-    .pre-spinner {
-      width: 32px;
-      height: 32px;
-      border: 2.5px solid #E8F5EE;
-      border-top-color: #2D6A4F;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+    .pre-tagline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(250, 248, 243, 0.35);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 0.4s ease 0.7s forwards;
     }
 
-    .pre-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 2.5px;
+    /* Progress bar at bottom */
+    .pre-progress-track {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 2px;
+      background: rgba(250, 248, 243, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeIn 0.3s ease 0.5s forwards;
+    }
+
+    .pre-progress-bar {
+      height: 100%;
+      width: 0%;
       background: linear-gradient(90deg, #1B4332, #40916C);
-      border-radius: 0 2px 2px 0;
-      box-shadow: 0 0 6px rgba(45, 106, 79, 0.5);
-      animation: loadbar 1.2s ease forwards;
-      z-index: 10000;
+      border-radius: 2px;
+      animation: progress 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
     }
 
-    @keyframes spin {
+    /* Green dot indicator */
+    .pre-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #40916C;
+      margin-top: 24px;
+      opacity: 0;
+      animation: fadeIn 0.3s ease 0.8s forwards, pulse 1.5s ease 0.8s infinite;
+    }
+
+    /* Fade out whole preloader */
+    #preloader.hide {
+      animation: preloaderOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+
+    @keyframes logoIn {
       to {
-        transform: rotate(360deg);
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
-    @keyframes loadbar {
-      0% {
-        width: 0%;
+    @keyframes fadeIn {
+      to {
         opacity: 1;
       }
+    }
 
-      60% {
-        width: 75%;
+    @keyframes progress {
+      0% {
+        width: 0%;
       }
 
-      90% {
-        width: 92%;
+      40% {
+        width: 55%;
+      }
+
+      70% {
+        width: 80%;
       }
 
       100% {
         width: 100%;
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.4);
+      }
+    }
+
+    @keyframes preloaderOut {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
         opacity: 0;
+        transform: scale(1.04);
+        pointer-events: none;
       }
     }
   </style>
 </head>
 
 <body>
-  <!-- Instant preloader — shows before React mounts -->
+
+  <script>
+    // Set cream background immediately — prevents dark flash on ALL visits
+    document.documentElement.style.background = '#FAF8F3';
+    document.body.style.background = '#FAF8F3';
+  </script>
+
+  <script>
+    // Only show preloader on first visit — not on refresh
+    // sessionStorage clears when tab closes but persists on refresh
+    var isFirstVisit = !sessionStorage.getItem('truvllo_visited');
+
+    if (!isFirstVisit) {
+      // Refresh or navigation — skip preloader entirely
+      // Set body bg to cream immediately
+      document.documentElement.style.background = '#FAF8F3';
+      document.body.style.background = '#FAF8F3';
+    }
+  </script>
+
+  <!-- Preloader — only rendered if first visit -->
   <div id="preloader">
-    <div class="pre-bar"></div>
-    <span class="pre-logo">Truvllo.</span>
-    <div class="pre-spinner"></div>
+    <div class="pre-logo-wrap">
+      <span class="pre-logo">Truvllo.</span>
+      <span class="pre-tagline">Budget with clarity</span>
+    </div>
+    <div class="pre-dot"></div>
+    <div class="pre-progress-track">
+      <div class="pre-progress-bar"></div>
+    </div>
   </div>
 
   <div id="root"></div>
 
   <script>
-    // Hide preloader as soon as React mounts
+    // Hide preloader function — called from React after mount
     window.__hidePreloader = function () {
       var el = document.getElementById('preloader');
       if (!el) return;
-      el.classList.add('fade-out');
-      setTimeout(function () { el.remove(); }, 350);
+      // Mark as visited so next refresh skips preloader
+      sessionStorage.setItem('truvllo_visited', '1');
+      el.classList.add('hide');
+      setTimeout(function () {
+        el.remove();
+        // Switch bg to cream after preloader gone
+        document.documentElement.style.background = '#FAF8F3';
+        document.body.style.background = '#FAF8F3';
+      }, 500);
     };
+
+    // Remove preloader immediately if not first visit
+    if (!isFirstVisit) {
+      var el = document.getElementById('preloader');
+      if (el) el.remove();
+    }
   </script>
 
   <script type="module" src="/src/main.tsx"></script>

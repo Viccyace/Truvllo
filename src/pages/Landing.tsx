@@ -293,6 +293,12 @@ export default function Landing() {
                   >
                     <Play size={15} className="text-forest-light" /> See demo
                   </button>
+                  <Link
+                    to="/demo"
+                    className="flex items-center gap-2 rounded-full border border-forest-light/30 bg-forest/20 px-6 py-3.5 text-sm font-semibold text-forest-light transition hover:bg-forest/30"
+                  >
+                    Try live demo
+                  </Link>
                 </div>
                 <div className="mt-10 flex items-center gap-4 text-sm text-white/40">
                   <div className="flex -space-x-2">
@@ -582,8 +588,222 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* App Preview Section */}
         <section className="bg-white py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <span className="inline-block rounded-full border border-forest/20 bg-forest/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-forest">
+                Live preview
+              </span>
+              <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+                See it before you <em>sign up</em>
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-base text-stone">
+                This is your actual dashboard — with real data, real AI, real
+                pace tracking.
+              </p>
+            </div>
+
+            {/* Fake browser window */}
+            <div className="relative mx-auto max-w-4xl">
+              {/* Glow behind */}
+              <div className="absolute -inset-4 rounded-[40px] bg-forest/10 blur-3xl" />
+
+              {/* Browser chrome */}
+              <div className="relative overflow-hidden rounded-[24px] border border-stone/20 shadow-[0_32px_80px_rgba(10,10,10,0.15)]">
+                {/* Browser top bar */}
+                <div className="flex items-center gap-3 bg-[#F0EDE4] px-4 py-3 border-b border-stone/10">
+                  <div className="flex gap-1.5">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 flex justify-center">
+                    <div className="flex items-center gap-2 rounded-lg bg-white/80 px-4 py-1.5 text-xs text-stone border border-stone/10">
+                      <div className="h-2.5 w-2.5 rounded-full bg-forest/60" />
+                      truvllo.app/dashboard
+                    </div>
+                  </div>
+                </div>
+
+                {/* App UI mockup */}
+                <div
+                  className="bg-cream p-4 sm:p-5"
+                  style={{ minHeight: "420px" }}
+                >
+                  <div className="flex gap-4">
+                    {/* Sidebar — desktop only */}
+                    <div className="hidden sm:flex w-44 shrink-0 flex-col rounded-[20px] bg-ink p-4 gap-2">
+                      <div className="mb-2 h-5 w-20 rounded-lg bg-white/20" />
+                      <div className="rounded-xl bg-white/8 p-2.5 flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-forest-light" />
+                        <div className="h-2 w-16 rounded bg-white/60" />
+                      </div>
+                      {["w-14", "w-16", "w-12", "w-16", "w-14"].map((w, i) => (
+                        <div
+                          key={i}
+                          className="rounded-xl p-2.5 flex items-center gap-2"
+                        >
+                          <div className="h-2 w-2 rounded-full bg-white/20" />
+                          <div className={`h-2 ${w} rounded bg-white/20`} />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Main content */}
+                    <div className="flex-1 space-y-3">
+                      {/* Header */}
+                      <div className="mb-3">
+                        <div className="h-2 w-24 rounded-full bg-forest/40 mb-1.5" />
+                        <div className="h-5 w-32 rounded-lg bg-ink/80" />
+                      </div>
+
+                      {/* Summary cards */}
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {[
+                          {
+                            label: "Total budget",
+                            val: "₦150,000",
+                            sub: "monthly",
+                            dark: false,
+                          },
+                          {
+                            label: "Total spent",
+                            val: "₦87,500",
+                            sub: "58% used",
+                            dark: false,
+                          },
+                          {
+                            label: "Remaining",
+                            val: "₦62,500",
+                            sub: "42% left",
+                            dark: false,
+                          },
+                          {
+                            label: "Safe today",
+                            val: "₦3,200",
+                            sub: "Spend freely",
+                            dark: true,
+                          },
+                        ].map(({ label, val, sub, dark }) => (
+                          <div
+                            key={label}
+                            className={`rounded-[16px] p-3 ${dark ? "text-white" : "bg-white border border-cream-dark"}`}
+                            style={
+                              dark
+                                ? {
+                                    background:
+                                      "linear-gradient(135deg,#1B4332,#40916C)",
+                                  }
+                                : {}
+                            }
+                          >
+                            <p
+                              className={`text-[9px] font-semibold uppercase tracking-wide mb-1 ${dark ? "text-white/50" : "text-stone"}`}
+                            >
+                              {label}
+                            </p>
+                            <p
+                              className={`text-sm font-bold stat-number ${dark ? "text-white" : "text-ink"}`}
+                            >
+                              {val}
+                            </p>
+                            <p
+                              className={`text-[9px] mt-0.5 capitalize ${dark ? "text-white/40" : "text-stone"}`}
+                            >
+                              {sub}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Pace card */}
+                      <div
+                        className="rounded-[20px] bg-white border border-cream-dark p-4"
+                        style={{ borderLeft: "3px solid #2D6A4F" }}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <p className="text-[9px] font-semibold uppercase tracking-wide text-stone mb-1">
+                              Budget pace
+                            </p>
+                            <div className="flex items-center gap-1.5">
+                              <div className="h-3 w-3 rounded-full bg-emerald-500" />
+                              <p className="text-sm font-semibold text-ink">
+                                On track
+                              </p>
+                            </div>
+                          </div>
+                          <span className="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700">
+                            58% used
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-cream-dark relative">
+                          <div
+                            className="absolute top-0 h-2 w-0.5 bg-stone/30 rounded-full"
+                            style={{ left: "55%" }}
+                          />
+                          <div
+                            className="h-2 rounded-full bg-forest-gradient"
+                            style={{ width: "58%" }}
+                          />
+                        </div>
+                        <p className="text-[9px] text-stone mt-1">
+                          Expected 55% · Actual 58%
+                        </p>
+                      </div>
+
+                      {/* AI insight card */}
+                      <div className="rounded-[20px] bg-white border border-cream-dark p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="h-7 w-7 rounded-xl bg-forest-gradient flex items-center justify-center">
+                              <Brain size={12} className="text-white" />
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold text-ink">
+                                AI Spending Analyst
+                              </p>
+                              <p className="text-[9px] text-stone">
+                                Powered by Claude
+                              </p>
+                            </div>
+                          </div>
+                          <div className="rounded-xl bg-forest px-2.5 py-1 text-[9px] font-semibold text-white flex items-center gap-1">
+                            <Sparkles size={8} /> Analyse
+                          </div>
+                        </div>
+                        <div className="rounded-xl bg-forest/5 border border-forest/10 p-2.5">
+                          <p className="text-[10px] leading-4 text-ink">
+                            Your top spending is Food at ₦39,500 — 45% of total.
+                            Transport is second at ₦14,300. You're slightly
+                            ahead of pace — good work! 🎯
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA overlay */}
+              <div className="mt-8 text-center">
+                <Link
+                  to="/demo"
+                  className="inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
+                >
+                  Try the live demo <ArrowRight size={15} />
+                </Link>
+                <p className="mt-3 text-xs text-stone">
+                  No account needed · See real features · Takes 30 seconds
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <div className="text-center">
               <span className="inline-block rounded-full border border-forest/20 bg-forest/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-forest">
@@ -703,7 +923,7 @@ export default function Landing() {
                 {/* Glow */}
                 <div className="absolute inset-0 rounded-[32px] shadow-[0_0_60px_rgba(64,145,108,0.35)]" />
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber px-5 py-1.5 text-xs font-bold text-ink">
-                  ✦ Most popular
+                  ✦ 7-day free trial
                 </div>
                 <div className="relative">
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
@@ -748,7 +968,7 @@ export default function Landing() {
                     to="/signup"
                     className="mt-8 block rounded-2xl bg-white px-5 py-3.5 text-center text-sm font-bold text-forest-dark transition hover:opacity-90 active:scale-[0.98]"
                   >
-                    Start with Premium
+                    Start free — 7-day trial
                   </Link>
                 </div>
               </div>
@@ -805,8 +1025,8 @@ export default function Landing() {
 
             {/* Bottom note */}
             <p className="mt-10 text-center text-sm text-white/30">
-              All prices shown in NGN. Payments processed securely via Paystack.
-              Cancel anytime.
+              7-day Premium trial unlocks automatically when you log your first
+              expense. No card needed. Payments via Paystack.
             </p>
           </div>
         </section>

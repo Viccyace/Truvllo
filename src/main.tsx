@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { AuthProvider } from "./hooks/AuthProvider";
+import { BudgetProvider } from "./hooks/BudgetProvider";
 import "./index.css";
 
 // Hide preloader once React is ready
@@ -9,7 +10,9 @@ const root = createRoot(document.getElementById("root")!);
 root.render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <BudgetProvider>
+        <App />
+      </BudgetProvider>
     </AuthProvider>
   </StrictMode>,
 );

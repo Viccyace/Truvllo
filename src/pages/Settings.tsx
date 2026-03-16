@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { AppShell } from "@/components/shared/AppShell";
 import { supabase } from "@/lib/supabase/client";
 import { CurrencyCode } from "@/types";
 import { formatPrice } from "@/lib/constants/pricing";
@@ -18,7 +17,8 @@ const currencies: { code: CurrencyCode; label: string }[] = [
 ];
 
 export default function Settings() {
-  const { profile } = useAuth();
+  const { profile: _p } = useAuth();
+  const profile = _p!;
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -42,7 +42,6 @@ export default function Settings() {
   }, []);
   const push = usePushNotifications();
 
-  if (!profile) return null;
   const isPremium = profile?.plan === "premium" || profile?.plan === "business";
 
   async function handleSave(e: React.FormEvent) {
@@ -90,7 +89,12 @@ export default function Settings() {
   }
 
   return (
-    <AppShell title="Settings" profile={profile}>
+    <>
+      <div className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+          Settings
+        </h1>
+      </div>
       <div className="grid gap-5 xl:grid-cols-[1fr_0.85fr]">
         {/* Profile form */}
         <div className="space-y-5">
@@ -358,6 +362,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-    </AppShell>
+    </>
   );
 }

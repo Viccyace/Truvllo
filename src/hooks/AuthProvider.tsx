@@ -24,7 +24,7 @@ function setCachedProfile(p: Profile | null) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialise from localStorage immediately — no blank frame on refresh
   const [profile, setProfile] = useState<Profile | null>(getCachedProfile);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!getCachedProfile()); // false if cached
 
   function updateProfile(p: Profile | null) {
     setProfile(p);
